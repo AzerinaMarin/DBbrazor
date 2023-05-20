@@ -1,0 +1,68 @@
+﻿@page "/patrocinadores"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar 
+
+<h3>Patrocinadores</h3>
+<button class="btn btn-primary" @onclick="Agregar">Agregar</button> <br /><br />
+@if(patrocinadores == null)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+} else if (patrocinadores.Count == 0)
+{
+    <h1>No existen personas registradas</h1>
+}
+else
+{
+    <div class="container-sm">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Contacto</th>
+                <th>Tipo de patrocinador</th>
+                <th>  </th>
+                <th>  </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var patrocinador in patrocinadores)
+            {
+                <tr>
+                    <td>@patrocinador.Nombre</td>
+                    <td>@patrocinador.Contacto </td>
+                    <td>@patrocinador.Tipo</td>
+                    <td><button class="btn btn-sm btn-outline-secondary" @onclick="(()=>Modificar(patrocinador.Id))"><span class="oi oi-pencil"></span></button></td>
+                    <td><button class="btn btn-sm btn-outline-danger" @onclick="(()=>Eliminar(patrocinador.Id))"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+}
+
+@code {
+    private List<Patrocinador>? patrocinadores;
+    protected override async Task OnInitializedAsync()
+    {
+        patrocinadores = await http.GetFromJsonAsync<List<Patrocinador>>("/api/patrocinadores");
+    }
+
+    private void Agregar()
+    {
+        navegar.NavigateTo("/patrocinadores/nuevo");
+    }
+    private void Modificar(int id)
+    {
+        navegar.NavigateTo($"/patrocinadores/editar/{id}");
+    }
+    private async void Eliminar(int id)
+    {
+        await http.DeleteAsync($"/api/patrocinadores/{id}");
+        patrocinadores = await http.GetFromJsonAsync<List<Patrocinador>>("/api/patrocinadores");
+        StateHasChanged();
+        //patrocinadores.Remove(unPatrocinador);
+    }
+}

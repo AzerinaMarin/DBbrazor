@@ -1,0 +1,37 @@
+﻿@page "/patrocinadores/nuevo"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3>Agregar nuevos patrocinadores</h3>
+<EditForm Model="patrocinador" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator/>
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText id="txtNombre" class="form-control" @bind-Value="patrocinador.Nombre"/>
+        <ValidationMessage For="(()=>patrocinador.Nombre)"/>
+    </div>
+    <div class="mb-3">
+        <label for="txtContacto" class="form-label">Contacto</label>
+        <InputText id="txtContacto" class="form-control"  @bind-Value="patrocinador.Contacto" />
+        <ValidationMessage For="(()=>patrocinador.Contacto)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtContacto" class="form-label">Tipo de patrocinador</label>
+        <InputText id="txtContacto" class="form-control" @bind-Value="patrocinador.Tipo" />
+        <ValidationMessage For="(()=>patrocinador.Tipo)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    private Patrocinador patrocinador = new Patrocinador();
+
+    private async void Guardar()
+    {
+        await http.PostAsJsonAsync("/api/patrocinadores", patrocinador);
+        navegar.NavigateTo("/patrocinadores");
+    }
+
+}

@@ -1,0 +1,46 @@
+﻿@page "/patrocinadores/editar/{Id:int}"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<h3>Modificar patrocinadores</h3>
+
+<EditForm Model="patrocinador" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText id="txtNombre" class="form-control" @bind-Value="patrocinador.Nombre" />
+        <ValidationMessage For="(()=>patrocinador.Nombre)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtContacto" class="form-label">Contacto</label>
+        <InputText id="txtContacto" class="form-control" @bind-Value="patrocinador.Contacto" />
+        <ValidationMessage For="(()=>patrocinador.Contacto)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtContacto" class="form-label">Tipo de patrocinador</label>
+        <InputText id="txtContacto" class="form-control" @bind-Value="patrocinador.Tipo" />
+        <ValidationMessage For="(()=>patrocinador.Tipo)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button @onclick="Cancelar" class="btn btn-danger">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Patrocinador patrocinador = new Patrocinador();
+    protected override async Task OnInitializedAsync()
+    {
+        patrocinador = await http.GetFromJsonAsync<Patrocinador>($"api/patrocinadores/{Id}");
+    }
+    private async void Guardar()
+    {
+        await  http.PutAsJsonAsync($"api/patrocinadores/{Id}", patrocinador);
+        Cancelar();
+        //navegar.NavigateTo("/patrocinadores");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/patrocinadores");
+    }
+}
