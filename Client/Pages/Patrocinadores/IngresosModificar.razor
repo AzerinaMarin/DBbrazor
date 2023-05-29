@@ -1,0 +1,50 @@
+﻿@page "/ingresos/editar/{Id:int}"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Ingresos</PageTitle>
+
+<h3>Modificar los ingresos</h3>
+
+<EditForm Model="ingresos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="txtAnuncio" class="form-label">Anuncio</label>
+        <InputNumber id="txtAnuncio" class="form-control" @bind-Value="ingresos.AnuncioId" />
+    </div>
+    <div class="mb-3">
+        <label for="txtPatrocinador" class="form-label">Patrocinador</label>
+        <InputNumber id="txtPatrocinador" class="form-control" @bind-Value="ingresos.PatrocinadorId" />
+    </div>
+    <div class="mb-3">
+        <label for="txtTotal" class="form-label">Total</label>
+        <InputNumber id="txtTotal" class="form-control" @bind-Value="ingresos.Total" />
+        <ValidationMessage For="(()=>ingresos.Total)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtPagado" class="form-label">Pagado</label>
+        <InputNumber id="txtPagado" class="form-control" @bind-Value="ingresos.Pagado" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button @onclick="Cancelar" class="btn btn-danger">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Ingresos ingresos = new Ingresos();
+    protected override async Task OnInitializedAsync()
+    {
+        ingresos = await http.GetFromJsonAsync<Ingresos>($"api/ingresos/{Id}");
+    }
+    private async void Guardar()
+    {
+        await http.PutAsJsonAsync($"api/ingresos/{Id}", ingresos);
+        Cancelar();
+        //navegar.NavigateTo("/patrocinadores");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/ingresos");
+}
+}

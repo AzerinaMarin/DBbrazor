@@ -1,0 +1,46 @@
+﻿@page "/transmisiones/nuevo"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Transmisiones</PageTitle>
+<h3>Ingresar transmisión</h3>
+
+<EditForm Model="transmision" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="txtEncuentro" class="form-label">Encuentro</label>
+        <InputText id="txtEncuentro" class="form-control" @bind-Value="transmision.Encuentro" />
+        <ValidationMessage For="(()=>transmision.Encuentro)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtFecha" class="form-label">Fecha</label>
+        <InputDate id="txtFecha" class="form-control" @bind-Value="transmision.Fecha" />
+        <ValidationMessage For="(()=>transmision.Fecha)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtTorneo" class="form-label">Torneo</label>
+        <InputText id="txtTorneo" class="form-control" @bind-Value="transmision.Torneo" />
+    </div>
+    <div class="mb-3">
+        <label for="txtAnuncio" class="form-label">Id del anuncio</label>
+        <InputNumber id="txtAnuncio" class="form-control" @bind-Value="transmision.AnuncioId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+@code {
+
+    private Transmisiones transmision = new Transmisiones();
+
+    private async void Guardar()
+    {
+        await http.PostAsJsonAsync("/api/transmisiones", transmision);
+        Cancelar();
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/transmisiones");
+    }
+
+}

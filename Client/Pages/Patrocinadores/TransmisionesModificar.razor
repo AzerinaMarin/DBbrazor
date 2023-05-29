@@ -1,0 +1,50 @@
+﻿@page "/transmisiones/editar/{Id:int}"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Transmisiones</PageTitle>
+
+<h3>Modificar transmisiones</h3>
+
+<EditForm Model="transmision" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="txtEncuentro" class="form-label">Encuentro</label>
+        <InputText id="txtEncuentro" class="form-control" @bind-Value="transmision.Encuentro" />
+        <ValidationMessage For="(()=>transmision.Encuentro)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtFecha" class="form-label">Fecha</label>
+        <InputDate id="txtFecha" class="form-control" @bind-Value="transmision.Fecha" />
+        <ValidationMessage For="(()=>transmision.Fecha)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtTorneo" class="form-label">Torneo</label>
+        <InputText id="txtTorneo" class="form-control" @bind-Value="transmision.Torneo" />
+    </div>
+    <div class="mb-3">
+        <label for="txtAnuncio" class="form-label">Id del anuncio</label>
+        <InputNumber id="txtAnuncio" class="form-control" @bind-Value="transmision.AnuncioId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button @onclick="Cancelar" class="btn btn-danger">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Transmisiones transmision = new Transmisiones();
+    protected override async Task OnInitializedAsync()
+    {
+        transmision = await http.GetFromJsonAsync<Transmisiones>($"api/transmisiones/{Id}");
+    }
+    private async void Guardar()
+    {
+        await http.PutAsJsonAsync($"api/transmisiones/{Id}", transmision);
+        Cancelar();
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/transmisiones");
+    }
+}

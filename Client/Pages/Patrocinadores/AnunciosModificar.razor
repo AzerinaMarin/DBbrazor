@@ -1,0 +1,47 @@
+﻿@page "/anuncios/editar/{Id:int}"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Anuncios</PageTitle>
+
+<h3>Modificar los anuncios</h3>
+<EditForm Model="anuncios" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText id="txtNombre" class="form-control" @bind-Value="anuncios.Nombre" />
+        <ValidationMessage For="(()=>anuncios.Nombre)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtDuracion" class="form-label">Duración</label>
+        <InputNumber id="txtDuracion" class="form-control" @bind-Value="anuncios.Duracion" />
+        <ValidationMessage For="(()=>anuncios.Duracion)" />
+    </div>
+    <div class="mb-3">
+        <label for="txtCosto" class="form-label">Costo</label>
+        <InputNumber id="txtCosto" class="form-control" @bind-Value="anuncios.Costo" />
+        <ValidationMessage For="(()=>anuncios.Costo)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button @onclick="Cancelar" class="btn btn-danger">Cancelar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Anuncios anuncios = new Anuncios();
+    protected override async Task OnInitializedAsync()
+    {
+        anuncios = await http.GetFromJsonAsync<Anuncios>($"api/anuncios/{Id}");
+    }
+    private async void Guardar()
+    {
+        await http.PutAsJsonAsync($"api/anuncios/{Id}", anuncios);
+        Cancelar();
+        //navegar.NavigateTo("/patrocinadores");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/anuncios");
+    }
+}

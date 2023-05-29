@@ -1,0 +1,76 @@
+﻿@page "/ingresos"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Ingresos</PageTitle>
+
+<h3>Ingresos</h3>
+<button class="btn btn-primary" @onclick="Agregar">Agregar</button>
+<br />
+<br />
+@if (ingreso == null)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else if (ingreso.Count == 0)
+{
+    <h1>No existen personas registradas</h1>
+}
+else
+{
+    <div class="container-sm">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>AnuncioId</th>
+                    <th>PatrocinadorId</th>
+                    <th>Total</th>
+                    <th>Pagado</th>
+                    <th> </th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ingresos in ingreso)
+                {
+                    <tr>
+                        <td>@ingresos.Id</td>
+                        <td>@ingresos.AnuncioId</td>
+                        <td>@ingresos.PatrocinadorId</td>
+                        <td>@ingresos.Total</td>
+                        <td>@ingresos.Pagado</td>
+                        <td><button class="btn btn-sm btn-outline-secondary" @onclick="(()=>Modificar(ingresos.Id))"><span class="oi oi-pencil"></span></button></td>
+                        <td><button class="btn btn-sm btn-outline-danger" @onclick="(()=>Eliminar(ingresos.Id))"><span class="oi oi-trash"></span></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<Ingresos>? ingreso;
+    protected override async Task OnInitializedAsync()
+    {
+        ingreso = await http.GetFromJsonAsync<List<Ingresos>>("/api/ingresos");
+    }
+
+    private void Agregar()
+    {
+        navegar.NavigateTo("/ingresos/nuevo");
+    }
+    private void Modificar(int id)
+    {
+        navegar.NavigateTo($"/ingresos/editar/{id}");
+    }
+    private async void Eliminar(int id)
+    {
+        await http.DeleteAsync($"/api/ingresos/{id}");
+        ingreso = await http.GetFromJsonAsync<List<Ingresos>>("/api/ingresos");
+        StateHasChanged();
+        //patrocinadores.Remove(unPatrocinador);
+    }
+}

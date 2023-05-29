@@ -1,0 +1,73 @@
+﻿@page "/anuncios"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Anuncios</PageTitle>
+
+<h3>Anuncios</h3>
+<button class="btn btn-primary" @onclick="Agregar">Agregar</button>
+<br />
+<br />
+@if (anuncio == null)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else if (anuncio.Count == 0)
+{
+    <h1>No existen personas registradas</h1>
+}
+else
+{
+    <div class="container-sm">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Duración</th>
+                    <th>Costo</th>
+                    <th>  </th>
+                    <th>  </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var anuncios in anuncio)
+                {
+                    <tr>
+                        <td>@anuncios.Id</td>
+                        <td>@anuncios.Nombre</td>
+                        <td>@anuncios.Duracion </td>
+                        <td>@anuncios.Costo</td>
+                        <td><button class="btn btn-sm btn-outline-secondary" @onclick="(()=>Modificar(anuncios.Id))"><span class="oi oi-pencil"></span></button></td>
+                        <td><button class="btn btn-sm btn-outline-danger" @onclick="(()=>Eliminar(anuncios.Id))"><span class="oi oi-trash"></span></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+@code {
+    private List<Anuncios>? anuncio;
+    protected override async Task OnInitializedAsync()
+    {
+        anuncio = await http.GetFromJsonAsync<List<Anuncios>>("/api/anuncios");
+    }
+
+    private void Agregar()
+    {
+        navegar.NavigateTo("/anuncios/nuevo");
+    }
+    private void Modificar(int id)
+    {
+        navegar.NavigateTo($"/anuncios/editar/{id}");
+    }
+    private async void Eliminar(int id)
+    {
+        await http.DeleteAsync($"/api/anuncios/{id}");
+        anuncio = await http.GetFromJsonAsync<List<Anuncios>>("/api/anuncios");
+        StateHasChanged();
+        //patrocinadores.Remove(unPatrocinador);
+    }
+}

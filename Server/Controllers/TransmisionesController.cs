@@ -10,7 +10,7 @@ using Bdapis.Shared.Modelo;
 
 namespace Bdapis.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/transmisiones")]
     [ApiController]
     public class TransmisionesController : ControllerBase
     {

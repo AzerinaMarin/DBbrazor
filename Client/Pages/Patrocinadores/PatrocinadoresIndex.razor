@@ -2,7 +2,7 @@
 @using Bdapis.Shared.Modelo
 @inject HttpClient http
 @inject NavigationManager navegar 
-
+<PageTitle>Patrocinadores</PageTitle>
 <h3>Patrocinadores</h3>
 <button class="btn btn-primary" @onclick="Agregar">Agregar</button> <br /><br />
 @if(patrocinadores == null)
@@ -20,6 +20,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Nombre</th>
                 <th>Contacto</th>
                 <th>Tipo de patrocinador</th>
@@ -31,6 +32,7 @@ else
             @foreach (var patrocinador in patrocinadores)
             {
                 <tr>
+                    <td>@patrocinador.Id</td>
                     <td>@patrocinador.Nombre</td>
                     <td>@patrocinador.Contacto </td>
                     <td>@patrocinador.Tipo</td>

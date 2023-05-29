@@ -1,0 +1,78 @@
+﻿@page "/transmisiones"
+@using Bdapis.Shared.Modelo
+@inject HttpClient http
+@inject NavigationManager navegar
+<PageTitle>Transmisiones</PageTitle>
+
+<h3>Transmisiones</h3>
+
+<button class="btn btn-primary" @onclick="Agregar">Agregar</button>
+<br />
+<br />
+@if (transmision == null)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else if (transmision.Count == 0)
+{
+    <h1>No existen personas registradas</h1>
+}
+else
+{
+    <div class="container-sm">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Encuentro</th>
+                    <th>Fecha</th>
+                    <th>Torneo</th>
+                    <th>Id del anuncio</th>
+                    <th>  </th>
+                    <th>  </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transmisiones in transmision)
+                {
+                    <tr>
+                        <td>@transmisiones.Id</td>
+                        <td>@transmisiones.Encuentro</td>
+                        <td>@transmisiones.Fecha </td>
+                        <td>@transmisiones.Torneo</td>
+                        <td>@transmisiones.AnuncioId</td>
+                        <td><button class="btn btn-sm btn-outline-secondary" @onclick="(()=>Modificar(transmisiones.Id))"><span class="oi oi-pencil"></span></button></td>
+                        <td><button class="btn btn-sm btn-outline-danger" @onclick="(()=>Eliminar(transmisiones.Id))"><span class="oi oi-trash"></span></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@code {
+    private List<Transmisiones>? transmision;
+    protected override async Task OnInitializedAsync()
+    {
+        transmision = await http.GetFromJsonAsync<List<Transmisiones>>("/api/transmisiones");
+    }
+
+    private void Agregar()
+    {
+        navegar.NavigateTo("/transmisiones/nuevo");
+    }
+    private void Modificar(int id)
+    {
+        navegar.NavigateTo($"/transmisiones/editar/{id}");
+    }
+    private async void Eliminar(int id)
+    {
+        await http.DeleteAsync($"/api/transmisiones/{id}");
+        transmision = await http.GetFromJsonAsync<List<Transmisiones>>("/api/transmisiones");
+        StateHasChanged();
+    }
+
+}
